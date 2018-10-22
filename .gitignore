@@ -1,2 +1,4 @@
-.shadow-cljs 
-node_modules 
+.nrepl-port
+/.shadow-cljs/*
+/node_modules/*
+/resources/public/js/*
