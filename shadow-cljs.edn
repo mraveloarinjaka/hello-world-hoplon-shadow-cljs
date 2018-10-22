@@ -15,5 +15,5 @@
         :asset-path "/js"
         :devtools {:http-root "resources/public"
                    :http-port 3000}
-        :modules {:main {:entries [my-app.core]}}
+        :modules {:hoplon {:entries [examples.hoplon]}}
         }}}

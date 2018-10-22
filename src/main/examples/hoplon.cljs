@@ -1,4 +1,4 @@
-(ns my-app.core
+(ns examples.hoplon
   (:require
     [hoplon.core :as h]
     [hoplon.jquery]
