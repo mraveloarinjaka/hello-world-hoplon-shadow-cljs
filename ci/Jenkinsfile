@@ -27,14 +27,6 @@ pipeline {
       stage("Deployment") {
          steps  {
             archiveArtifacts artifacts: 'resources/public/**/*', onlyIfSuccessful: true
-            publishHTML (target: [
-                  allowMissing: false,
-                  alwaysLinkToLastBuild: true,
-                  keepAll: true,
-                  reportDir: 'resources/public',
-                  reportFiles: 'mx-nostro-nfr.html',
-                  reportName: "Trend report"
-            ])
          }
       }
    }
