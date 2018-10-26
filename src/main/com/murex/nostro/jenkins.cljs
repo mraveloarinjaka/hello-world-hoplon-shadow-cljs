@@ -104,10 +104,12 @@
                             :CASH-VD-5D "cash value date"}})
 
 (def COLLECT-KEY-THEN-CONTINUE [specter/ALL (specter/collect-one specter/FIRST) specter/LAST])
+
 (def PATH-TO-REALTIME [:artifacts-content :realtime
                        COLLECT-KEY-THEN-CONTINUE
                        (specter/submap [:reference :reached])
                        COLLECT-KEY-THEN-CONTINUE])
+
 (def PATH-TO-INITAL-LOAD [:artifacts-content :initial-load
                           COLLECT-KEY-THEN-CONTINUE
                           (specter/submap [:reference :reached])
@@ -137,16 +139,23 @@
   [labels data-key data]
   (let [extracted-data (specter/select (get PATH-TO-DATA data-key) data)]
     (into {}
-          (map (fn [[projection data-type value]] {(->label #{projection data-type} (get labels data-key)) value}) extracted-data))))
+          (->> extracted-data
+               (map (fn [[projection data-type value]] {(->label #{projection data-type} (get labels data-key)) value}))))))
+
+(defn- all-data-available?
+  [json-data]
+  (= 8 (count json-data)))
 
 (defn- init-one-chart
+  [{:keys [chart figures id data-key]}]
   [chart figures id data-key]
   (let [source (retrieve-data)]
+    (reset! figures [])
     (go-loop []
              (when-let [data (<! source)]
                (let [json-data (->json-data LABELS data-key data)
                      data-set {:value (vec (keys json-data))}]
-                 (when (count json-data)
+                 (when (all-data-available? json-data)
                    (swap! figures conj json-data)
                    (.load chart (clj->js {:json @figures
                                           :keys data-set
@@ -156,8 +165,8 @@
 
 (defn- ^{:dev/after-load true} init
   []
-  (init-one-chart INITIAL-LOAD-CHART INITIAL-LOAD "#initial-load" :initial-load)
-  (init-one-chart REALTIME-CHART REALTIME "#realtime" :realtime)
+  (init-one-chart {:chart INITIAL-LOAD-CHART :figures INITIAL-LOAD :id "#initial-load" :data-key :initial-load})
+  (init-one-chart {:chart REALTIME-CHART :figures REALTIME :id "#realtime" :data-key :realtime})
   )
 
 (defn ^{:export true} main
