@@ -1,0 +1,42 @@
+#!/usr/bin/groovy
+
+pipeline {
+   agent {
+      node {
+         label 'shadow-cljs'
+      }
+   }
+
+   // best would be to define the proxy in the cje palace provider but there is currently a bug with the no_proxy
+   // see https://issues.jenkins-ci.org/browse/JENKINS-32326
+   environment {
+      http_proxy = 'http://proxy:3128'
+         https_proxy = 'http://proxy:3128'
+         no_proxy='.murex.com'
+   }
+
+   stages {
+
+      stage('Build') {
+         steps  {
+            sh script: "yarn install"
+            sh script: "shadow-cljs release mx-nostro-nfr"
+         }
+      }
+
+      stage("Deployment") {
+         steps  {
+            archiveArtifacts artifacts: 'resources/public/**/*', onlyIfSuccessful: true
+            publishHTML (target: [
+                  allowMissing: false,
+                  alwaysLinkToLastBuild: true,
+                  keepAll: true,
+                  reportDir: 'resources/public',
+                  reportFiles: 'mx-nostro-nfr.html',
+                  reportName: "Trend report"
+            ])
+         }
+      }
+   }
+}
+
