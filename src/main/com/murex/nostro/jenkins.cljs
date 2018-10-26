@@ -64,12 +64,6 @@
                (recur remainings result)
                result))))
 
-(defn- path-to-reached [k]
-  (specter/traverse-all [:artifacts-content k specter/ALL (specter/collect-one specter/FIRST) specter/LAST :reached]))
-
-(defn- path-to-reference [k]
-  (specter/traverse-all [:artifacts-content k specter/ALL (specter/collect-one specter/FIRST) specter/LAST :reference]))
-
 (defn- retrieve-data []
   (let [builds (async/chan)
         hydrated-with-artifacts (async/chan)
@@ -109,42 +103,62 @@
                             :SEC-VD-5D "security value date"
                             :CASH-VD-5D "cash value date"}})
 
-(defn- init-one-chart
-  [figures id data-key]
-  (let [source (async/mult (retrieve-data))
-        reached (async/tap source (async/chan 1 (path-to-reached data-key)))
-        reference (async/tap source (async/chan 1 (path-to-reference data-key)))
-        reducer (fn [result [k v]] (update result k #(conj (vec %) v)))
-        ]
-    (go
-      (let [reached-data (<! (async/reduce reducer {} reached))
-            reference-data (<! (async/reduce reducer {} reference))
-            extract-figures (fn [label data] (vec (map (fn [[k v]] (into [(label v)] (get data k))) (get LABELS data-key))))
-            reached-figures (extract-figures identity reached-data)
-            reference-figures (extract-figures #(str % " - references") reference-data)
-            ]
-        (swap! figures into reached-figures)
-        (swap! figures into reference-figures)
-        ;(prn reached-data)
-        ;(prn reached-figures)
-        ;(prn id)
-        ;(prn @figures)
-        (c3/generate #js {:bindto id
-                          :data #js {:columns (clj->js (vec @figures))
-                                     :type "spline"
-                                     }})
-        ))))
+(def COLLECT-KEY-THEN-CONTINUE [specter/ALL (specter/collect-one specter/FIRST) specter/LAST])
+(def PATH-TO-REALTIME [:artifacts-content :realtime
+                       COLLECT-KEY-THEN-CONTINUE
+                       (specter/submap [:reference :reached])
+                       COLLECT-KEY-THEN-CONTINUE])
+(def PATH-TO-INITAL-LOAD [:artifacts-content :initial-load
+                          COLLECT-KEY-THEN-CONTINUE
+                          (specter/submap [:reference :reached])
+                          COLLECT-KEY-THEN-CONTINUE])
 
-(def REALTIME (atom nil))
-(def INITIAL-LOAD (atom nil))
+(def PATH-TO-DATA {:realtime PATH-TO-REALTIME :initial-load PATH-TO-INITAL-LOAD})
+
+(def REALTIME (atom []))
+(def INITIAL-LOAD (atom []))
+
+(def REALTIME-CHART
+  (c3/generate #js {:bindto "#realtime"
+                    :zoom #js {:enabled true}
+                    :data #js {:json #js {}}}))
+
+(def INITIAL-LOAD-CHART
+  (c3/generate #js {:bindto "#initial-load"
+                    :zoom #js {:enabled true}
+                    :data #js {:json #js {}}}))
+
+(defn- ->label
+  [k labels]
+  (let [label-key (first (clojure.set/intersection k (set (keys labels))))]
+    (str (get labels label-key) (if (get k :reference) " - references" ""))))
+
+(defn- ->json-data
+  [labels data-key data]
+  (let [extracted-data (specter/select (get PATH-TO-DATA data-key) data)]
+    (into {}
+          (map (fn [[projection data-type value]] {(->label #{projection data-type} (get labels data-key)) value}) extracted-data))))
+
+(defn- init-one-chart
+  [chart figures id data-key]
+  (let [source (retrieve-data)]
+    (go-loop []
+             (when-let [data (<! source)]
+               (let [json-data (->json-data LABELS data-key data)
+                     data-set {:value (vec (keys json-data))}]
+                 (when (count json-data)
+                   (swap! figures conj json-data)
+                   (.load chart (clj->js {:json @figures
+                                          :keys data-set
+                                          :type "spline"
+                                          }))))
+               (recur)))))
 
 (defn- ^{:dev/after-load true} init
   []
-  (init-one-chart REALTIME "#realtime" :realtime)
-  (init-one-chart INITIAL-LOAD "#initial-load" :initial-load)
+  (init-one-chart INITIAL-LOAD-CHART INITIAL-LOAD "#initial-load" :initial-load)
+  (init-one-chart REALTIME-CHART REALTIME "#realtime" :realtime)
   )
-
-;(go (<! (init)))
 
 (defn ^{:export true} main
   []
@@ -153,10 +167,17 @@
 #_ (def sample [{:number 34, :url "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/34/", :artifacts-url {:initial-load "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/34/artifact/results/initial-load.json", :realtime "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/34/artifact/results/realtime.json"}, :artifacts-content {:realtime {:NostroSecurityTradeDate {:reference "0.25", :passed true, :reached "0.20951381298380162"}, :NostroSecurityValueDate {:reference "0.38", :passed true, :reached "0.29523025554047044"}, :NostroCashTradeDate {:reference "0.32", :passed true, :reached "0.2258589652276808"}, :NostroCashValueDate {:reference "0.3", :passed true, :reached "0.22596379984980045"}}, :initial-load {:SEC-VD-5D {:reached "28.6699", :reference "33.0858", :passed true}, :SEC-TD-5D {:reached "29.1018", :reference "32.7955", :passed true}, :CASH-VD-5D {:reached "26.0449", :reference "33.3261", :passed true}, :CASH-TD-5D {:reached "28.6701", :reference "34.410", :passed true}}}}
                 {:number 2, :url "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/2/", :artifacts-url {:initial-load "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/2/artifact/results/initial-load.json", :realtime "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/2/artifact/results/realtime.json"}, :artifacts-content {:realtime {:NostroSecurityValueDate {:passed false, :reference "0.19188691844110903", :reached "0.3495548863564768"}, :NostroCashTradeDate {:passed true, :reference "1.0016803993084185", :reached "0.9886337525066845"}, :NostroSecurityTradeDate {:passed false, :reference "0.39994744027015006", :reached "0.2273705034370882"}}, :initial-load {:CASH-TD-5D {:reference "34.410", :reached "33.7988", :passed true}, :SEC-TD-5D {:reference "32.7955", :reached "33.2557", :passed true}, :CASH-VD-5D {:reference "33.3261", :reached "32.5256", :passed true}, :SEC-VD-5D {:reference "33.0858", :reached "33.1952", :passed true}}}}])
 
-#_ (def path-to-reached [:artifacts-content :realtime specter/ALL (specter/collect-one specter/FIRST) specter/LAST :reached])
-#_ (transduce (specter/traverse-all path-to-reached)
+#_ (->json-data LABELS :realtime (fist sample))
+
+#_ {#{:NostroSecurityTradeDate :reference} "0.25", #{:NostroSecurityTradeDate :reached} "0.20951381298380162", #{:NostroSecurityValueDate :reference} "0.38", #{:NostroSecurityValueDate :reached} "0.29523025554047044", #{:NostroCashTradeDate :reference} "0.32", #{:NostroCashTradeDate :reached} "0.2258589652276808", #{:NostroCashValueDate :reference} "0.3", #{:NostroCashValueDate :reached} "0.22596379984980045"}
+
+#_ (def PATH-TO-REACHED [:artifacts-content :realtime specter/ALL (specter/collect-one specter/FIRST) specter/LAST :reached])
+#_ (transduce (specter/traverse-all PATH-TO-REACHED)
               (completing (fn [result [k v]] (update result k #(conj (vec %) v))))
               {} sample)
-#_ (def reached (specter/select (into [specter/ALL] path-to-reached) sample))
+
+#_ (def reached (specter/select (into [specter/all] path-to-reached) sample))
 #_ (reduce (fn [result [k v]] (update result k #(conj (vec %) v))) {} reached)
+
+
 

@@ -5,7 +5,8 @@
   "src/test"]
 
  :dependencies
- [[binaryage/devtools "0.9.10"]
+ [[org.clojure/clojurescript "1.10.339"]
+  [binaryage/devtools "0.9.10"]
   [cider/cider-nrepl "0.18.0"]
   [cljs-http "0.1.45"]
   [com.rpl/specter "1.1.1"]
