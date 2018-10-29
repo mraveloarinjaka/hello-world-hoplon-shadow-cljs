@@ -23,9 +23,9 @@
    :modules {:hoplon {:entries [examples.hoplon] :default true}}}
   :mx-nostro-nfr
   {:target :browser
-   :output-dir "resources/public/js"
+   :output-dir "resources/public/mx-nostro-nfr/js"
    :asset-path "/js"
-   :devtools {:http-root "resources/public"
+   :devtools {:http-root "resources/public/mx-nostro-nfr"
               :http-port 3000}
    :modules {:mx-nostro-nfr {:entries [com.murex.nostro.jenkins]}}
    }}}

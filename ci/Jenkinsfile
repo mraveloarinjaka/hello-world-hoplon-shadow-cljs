@@ -26,7 +26,7 @@ pipeline {
 
       stage("Deployment") {
          steps  {
-            archiveArtifacts artifacts: 'resources/public/**/*', onlyIfSuccessful: true
+            archiveArtifacts artifacts: 'resources/public/mx-nostro-nfr/**/*', onlyIfSuccessful: true
          }
       }
    }
