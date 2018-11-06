@@ -18,6 +18,7 @@
   [response]
   (->> (get-in response [:body :builds])
        (sort-by #(get % :number))
+       (drop 20)
        (map #(select-keys % [:number :url]))
        ))
 
@@ -105,12 +106,14 @@
 
 (def COLLECT-KEY-THEN-CONTINUE [specter/ALL (specter/collect-one specter/FIRST) specter/LAST])
 
-(def PATH-TO-REALTIME [:artifacts-content :realtime
+(def PATH-TO-REALTIME [(specter/collect-one :number)
+                       :artifacts-content :realtime
                        COLLECT-KEY-THEN-CONTINUE
                        (specter/submap [:reference :reached])
                        COLLECT-KEY-THEN-CONTINUE])
 
-(def PATH-TO-INITAL-LOAD [:artifacts-content :initial-load
+(def PATH-TO-INITAL-LOAD [(specter/collect-one :number)
+                          :artifacts-content :initial-load
                           COLLECT-KEY-THEN-CONTINUE
                           (specter/submap [:reference :reached])
                           COLLECT-KEY-THEN-CONTINUE])
@@ -120,15 +123,21 @@
 (def REALTIME (atom []))
 (def INITIAL-LOAD (atom []))
 
+(defn generate-chart
+  [anchor]
+  (c3/generate (clj->js {:bindto anchor
+                         :zoom {:enabled true}
+                         :axis {:x {:type "category"
+                                    :label "build"
+                                    }
+                                :y {:label "seconds"}
+                                }
+                         :data {:json {}}})))
 (def REALTIME-CHART
-  (c3/generate #js {:bindto "#realtime"
-                    :zoom #js {:enabled true}
-                    :data #js {:json #js {}}}))
+  (generate-chart "#realtime"))
 
 (def INITIAL-LOAD-CHART
-  (c3/generate #js {:bindto "#initial-load"
-                    :zoom #js {:enabled true}
-                    :data #js {:json #js {}}}))
+  (generate-chart "#initial-load"))
 
 (defn- ->label
   [k labels]
@@ -140,11 +149,13 @@
   (let [extracted-data (specter/select (get PATH-TO-DATA data-key) data)]
     (into {}
           (->> extracted-data
-               (map (fn [[projection data-type value]] {(->label #{projection data-type} (get labels data-key)) value}))))))
+               (map (fn [[number projection data-type value]] {:build number (->label #{projection data-type} (get labels data-key)) value}))))))
 
 (defn- all-data-available?
   [json-data]
-  (= 8 (count json-data)))
+  (= 9 (count json-data))
+  true
+  )
 
 (defn- init-one-chart
   [{:keys [chart figures id data-key]}]
@@ -154,7 +165,8 @@
     (go-loop []
              (when-let [data (<! source)]
                (let [json-data (->json-data LABELS data-key data)
-                     data-set {:value (vec (keys json-data))}]
+                     data-set {:x "build"
+                               :value (sort (vec (remove #(= :build %) (keys json-data))))}]
                  (when (all-data-available? json-data)
                    (swap! figures conj json-data)
                    (.load chart (clj->js {:json @figures
@@ -176,7 +188,7 @@
 #_ (def sample [{:number 34, :url "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/34/", :artifacts-url {:initial-load "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/34/artifact/results/initial-load.json", :realtime "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/34/artifact/results/realtime.json"}, :artifacts-content {:realtime {:NostroSecurityTradeDate {:reference "0.25", :passed true, :reached "0.20951381298380162"}, :NostroSecurityValueDate {:reference "0.38", :passed true, :reached "0.29523025554047044"}, :NostroCashTradeDate {:reference "0.32", :passed true, :reached "0.2258589652276808"}, :NostroCashValueDate {:reference "0.3", :passed true, :reached "0.22596379984980045"}}, :initial-load {:SEC-VD-5D {:reached "28.6699", :reference "33.0858", :passed true}, :SEC-TD-5D {:reached "29.1018", :reference "32.7955", :passed true}, :CASH-VD-5D {:reached "26.0449", :reference "33.3261", :passed true}, :CASH-TD-5D {:reached "28.6701", :reference "34.410", :passed true}}}}
                 {:number 2, :url "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/2/", :artifacts-url {:initial-load "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/2/artifact/results/initial-load.json", :realtime "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/2/artifact/results/realtime.json"}, :artifacts-content {:realtime {:NostroSecurityValueDate {:passed false, :reference "0.19188691844110903", :reached "0.3495548863564768"}, :NostroCashTradeDate {:passed true, :reference "1.0016803993084185", :reached "0.9886337525066845"}, :NostroSecurityTradeDate {:passed false, :reference "0.39994744027015006", :reached "0.2273705034370882"}}, :initial-load {:CASH-TD-5D {:reference "34.410", :reached "33.7988", :passed true}, :SEC-TD-5D {:reference "32.7955", :reached "33.2557", :passed true}, :CASH-VD-5D {:reference "33.3261", :reached "32.5256", :passed true}, :SEC-VD-5D {:reference "33.0858", :reached "33.1952", :passed true}}}}])
 
-#_ (->json-data LABELS :realtime (fist sample))
+#_ (->json-data LABELS :realtime (first sample))
 
 #_ {#{:NostroSecurityTradeDate :reference} "0.25", #{:NostroSecurityTradeDate :reached} "0.20951381298380162", #{:NostroSecurityValueDate :reference} "0.38", #{:NostroSecurityValueDate :reached} "0.29523025554047044", #{:NostroCashTradeDate :reference} "0.32", #{:NostroCashTradeDate :reached} "0.2258589652276808", #{:NostroCashValueDate :reference} "0.3", #{:NostroCashValueDate :reached} "0.22596379984980045"}
 
@@ -188,5 +200,8 @@
 #_ (def reached (specter/select (into [specter/all] path-to-reached) sample))
 #_ (reduce (fn [result [k v]] (update result k #(conj (vec %) v))) {} reached)
 
+#_ (specter/select [specter/ALL (specter/collect-one :number) PATH-TO-REALTIME] sample)
+
+#_ (specter/select PATH-TO-REALTIME (first sample))
 
 
