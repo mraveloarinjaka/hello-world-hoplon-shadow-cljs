@@ -2,3 +2,5 @@
 /.shadow-cljs/*
 /node_modules/*
 /resources/public/js/*
+/resources/public/mx-nostro-nfr/js/*
+.vim-bookmarks
