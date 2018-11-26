@@ -5,13 +5,15 @@
   "src/test"]
 
  :dependencies
- [[org.clojure/clojurescript "1.10.339"]
+ [[org.clojure/clojurescript "1.10.439"]
   [binaryage/devtools "0.9.10"]
   [cider/cider-nrepl "0.18.0"]
   [cljs-http "0.1.45"]
-  [com.rpl/specter "1.1.1"]
+  [com.rpl/specter "1.1.2"]
   [funcool/promesa "1.9.0"]
   [hoplon "7.2.0"]]
+
+ :nrepl {:port 9000}
 
  :builds
  {:app
@@ -26,6 +28,6 @@
    :output-dir "resources/public/mx-nostro-nfr/js"
    :asset-path "/js"
    :devtools {:http-root "resources/public/mx-nostro-nfr"
-              :http-port 3000}
+              :http-port 4000}
    :modules {:mx-nostro-nfr {:entries [com.murex.nostro.jenkins]}}
    }}}

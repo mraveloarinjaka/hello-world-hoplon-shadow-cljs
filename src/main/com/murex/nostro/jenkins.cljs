@@ -1,15 +1,15 @@
 (ns com.murex.nostro.jenkins
-  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [cljs-http.client :as http]
             [cljs.core.async :refer [<! >!] :as async]
             [clojure.string :as string]
             [com.rpl.specter :as specter]
-            ["c3" :as c3]))
+            ["c3" :as c3])
+  (:require-macros [cljs.core.async.macros :refer [go go-loop]]))
 
 (def BASE-URL "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/")
-
 (def REQUIRED-ARTIFACTS {:realtime "realtime.json" :initial-load "initial_load.json"})
 (def REQUIRED-ARTIFACTS-REVERSE-LOOKUP (zipmap (vals REQUIRED-ARTIFACTS) (keys REQUIRED-ARTIFACTS)))
+(def MAX_CONCURRENT_REQUESTS 10)
 
 (defn- ->api-call-url [url]
   (str url "api/json"))
@@ -18,7 +18,6 @@
   [response]
   (->> (get-in response [:body :builds])
        (sort-by #(get % :number))
-       (drop 20)
        (map #(select-keys % [:number :url]))
        ))
 
@@ -65,35 +64,34 @@
                (recur remainings result)
                result))))
 
+(defn- hydrate-with-artifacts
+  [build ch]
+  (go
+    (let [response (<! (http/get (->api-call-url (:url build))))
+          artifacts (retrieve-artifacts response)]
+      (when (seq artifacts)
+        (let [hydrated-build (assoc build :artifacts-url (retrieve-artifacts-url (:url build) artifacts))]
+          (async/put! ch hydrated-build)))
+      (async/close! ch))))
+
+(defn- hydrate-with-artifacts-content
+  [build ch]
+  (go
+    (let [artifacts-content (<! (retrieve-artifacts-content (:artifacts-url build)))
+          hydrated-build (assoc build :artifacts-content artifacts-content)]
+      (async/put! ch hydrated-build)
+      (async/close! ch))))
+
 (defn- retrieve-data []
   (let [builds (async/chan)
         hydrated-with-artifacts (async/chan)
-        hydrated-with-artifacts-content (async/chan)
-        ]
+        hydrated-with-artifacts-content (async/chan)]
     (go
       (let [response (<! (http/get (->api-call-url BASE-URL)))]
-        (async/onto-chan builds (retrieve-builds response))
-        ))
-    (go-loop []
-             (when-let [build (<! builds)]
-               ;(prn build)
-               (let [response (<! (http/get (->api-call-url (:url build))))
-                     artifacts (retrieve-artifacts response)]
-                 (when (seq artifacts)
-                   (let [hydrated-build (assoc build :artifacts-url (retrieve-artifacts-url (:url build) artifacts))]
-                     (async/put! hydrated-with-artifacts hydrated-build)))
-                 (recur)
-                 ))
-             (async/close! hydrated-with-artifacts))
-    (go-loop []
-             (when-let [build (<! hydrated-with-artifacts)]
-               (let [artifacts-content (<! (retrieve-artifacts-content (:artifacts-url build)))
-                     hydrated-build (assoc build :artifacts-content artifacts-content)]
-                 (async/put! hydrated-with-artifacts-content hydrated-build))
-               (recur))
-             (async/close! hydrated-with-artifacts-content))
-    hydrated-with-artifacts-content
-    ))
+        (async/onto-chan builds (retrieve-builds response))))
+    (async/pipeline-async MAX_CONCURRENT_REQUESTS hydrated-with-artifacts hydrate-with-artifacts builds)
+    (async/pipeline-async MAX_CONCURRENT_REQUESTS hydrated-with-artifacts-content hydrate-with-artifacts-content hydrated-with-artifacts)
+    hydrated-with-artifacts-content))
 
 (def LABELS {:realtime {:NostroSecurityTradeDate "security trade date"
                         :NostroCashTradeDate "cash trade date"
@@ -128,10 +126,8 @@
   (c3/generate (clj->js {:bindto anchor
                          :zoom {:enabled true}
                          :axis {:x {:type "category"
-                                    :label "build"
-                                    }
-                                :y {:label "seconds"}
-                                }
+                                    :label "build"}
+                                :y {:label "seconds"}}
                          :data {:json {}}})))
 (def REALTIME-CHART
   (generate-chart "#realtime"))
@@ -185,23 +181,24 @@
   []
   (init))
 
-#_ (def sample [{:number 34, :url "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/34/", :artifacts-url {:initial-load "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/34/artifact/results/initial-load.json", :realtime "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/34/artifact/results/realtime.json"}, :artifacts-content {:realtime {:NostroSecurityTradeDate {:reference "0.25", :passed true, :reached "0.20951381298380162"}, :NostroSecurityValueDate {:reference "0.38", :passed true, :reached "0.29523025554047044"}, :NostroCashTradeDate {:reference "0.32", :passed true, :reached "0.2258589652276808"}, :NostroCashValueDate {:reference "0.3", :passed true, :reached "0.22596379984980045"}}, :initial-load {:SEC-VD-5D {:reached "28.6699", :reference "33.0858", :passed true}, :SEC-TD-5D {:reached "29.1018", :reference "32.7955", :passed true}, :CASH-VD-5D {:reached "26.0449", :reference "33.3261", :passed true}, :CASH-TD-5D {:reached "28.6701", :reference "34.410", :passed true}}}}
-                {:number 2, :url "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/2/", :artifacts-url {:initial-load "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/2/artifact/results/initial-load.json", :realtime "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/2/artifact/results/realtime.json"}, :artifacts-content {:realtime {:NostroSecurityValueDate {:passed false, :reference "0.19188691844110903", :reached "0.3495548863564768"}, :NostroCashTradeDate {:passed true, :reference "1.0016803993084185", :reached "0.9886337525066845"}, :NostroSecurityTradeDate {:passed false, :reference "0.39994744027015006", :reached "0.2273705034370882"}}, :initial-load {:CASH-TD-5D {:reference "34.410", :reached "33.7988", :passed true}, :SEC-TD-5D {:reference "32.7955", :reached "33.2557", :passed true}, :CASH-VD-5D {:reference "33.3261", :reached "32.5256", :passed true}, :SEC-VD-5D {:reference "33.0858", :reached "33.1952", :passed true}}}}])
+#_ (def samples (atom []))
+#_ (reset! samples [])
+#_ (def add-sample #(swap! samples conj %))
+#_ (add-tap add-sample)
+#_ (let [builds (async/take 50 (retrieve-data))]
+     (go-loop
+       []
+       (when-let [data (<! builds)]
+         (tap> data)
+         (recur))
+       (async/close! builds)))
 
-#_ (->json-data LABELS :realtime (first sample))
+#_ (first @samples) ;;{:number 186, :url "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/186/", :artifacts-url {:initial-load "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/186/artifact/results/initial_load.json", :realtime "http://cje.fr.murex.com/for-mercury/job/NFR/job/nostro-safety-net/186/artifact/results/realtime.json"}, :artifacts-content {:initial-load {:CASH-TD-5D {:reference "34.410", :passed true, :reached "26.8081"}, :SEC-TD-5D {:reference "32.7955", :passed true, :reached "24.7849"}, :SEC-VD-5D {:reference "33.0858", :passed true, :reached "23.8889"}, :CASH-VD-5D {:reference "33.3261", :passed true, :reached "24.7459"}}, :realtime {:NostroCashValueDate {:reference "0.3", :reached "0.27911741083318536", :passed true}, :NostroSecurityValueDate {:reference "0.38", :reached "0.38881582742208964", :passed true}, :NostroCashTradeDate {:reference "0.32", :reached "0.34698715856519796", :passed true}, :NostroSecurityTradeDate {:reference "0.25", :reached "0.25901606785055115", :passed true}}}}
+#_ (def sample (first @samples))
+#_ (->json-data LABELS :realtime sample)
 
 #_ {#{:NostroSecurityTradeDate :reference} "0.25", #{:NostroSecurityTradeDate :reached} "0.20951381298380162", #{:NostroSecurityValueDate :reference} "0.38", #{:NostroSecurityValueDate :reached} "0.29523025554047044", #{:NostroCashTradeDate :reference} "0.32", #{:NostroCashTradeDate :reached} "0.2258589652276808", #{:NostroCashValueDate :reference} "0.3", #{:NostroCashValueDate :reached} "0.22596379984980045"}
 
-#_ (def PATH-TO-REACHED [:artifacts-content :realtime specter/ALL (specter/collect-one specter/FIRST) specter/LAST :reached])
-#_ (transduce (specter/traverse-all PATH-TO-REACHED)
-              (completing (fn [result [k v]] (update result k #(conj (vec %) v))))
-              {} sample)
-
-#_ (def reached (specter/select (into [specter/all] path-to-reached) sample))
-#_ (reduce (fn [result [k v]] (update result k #(conj (vec %) v))) {} reached)
-
-#_ (specter/select [specter/ALL (specter/collect-one :number) PATH-TO-REALTIME] sample)
-
-#_ (specter/select PATH-TO-REALTIME (first sample))
+#_ (specter/select PATH-TO-REALTIME sample)
 
 
