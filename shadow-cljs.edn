@@ -1,16 +1,10 @@
-;; shadow-cljs configuration
 {:source-paths
- ["src/dev"
-  "src/main"
-  "src/test"]
+ ["src/main"]
 
  :dependencies
- [[org.clojure/clojurescript "1.10.439"]
-  [binaryage/devtools "0.9.10"]
-  [cider/cider-nrepl "0.18.0"]
-  [cljs-http "0.1.45"]
-  [com.rpl/specter "1.1.2"]
-  [funcool/promesa "1.9.0"]
+ [[binaryage/devtools "0.9.10"]
+  [cljs-http "0.1.46"]
+  [funcool/promesa "5.1.0"]
   [hoplon "7.2.0"]]
 
  :nrepl {:port 9000}
@@ -22,12 +16,4 @@
    :asset-path "/js"
    :devtools {:http-root "resources/public"
               :http-port 3000}
-   :modules {:hoplon {:entries [examples.hoplon] :default true}}}
-  :mx-nostro-nfr
-  {:target :browser
-   :output-dir "resources/public/mx-nostro-nfr/js"
-   :asset-path "/js"
-   :devtools {:http-root "resources/public/mx-nostro-nfr"
-              :http-port 4000}
-   :modules {:mx-nostro-nfr {:entries [com.murex.nostro.jenkins]}}
-   }}}
+   :modules {:hoplon {:entries [examples.hoplon]}}}}}
