@@ -3,6 +3,7 @@
 
  :dependencies
  [[binaryage/devtools "0.9.10"]
+  [cider/cider-nrepl "0.25.3"]
   [cljs-http "0.1.46"]
   [funcool/promesa "5.1.0"]
   [hoplon "7.2.0"]]
