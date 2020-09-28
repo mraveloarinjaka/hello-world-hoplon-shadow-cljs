@@ -1,15 +1,5 @@
-{:source-paths
- ["src/main"]
-
- :dependencies
- [[binaryage/devtools "0.9.10"]
-  [cider/cider-nrepl "0.25.3"]
-  [cljs-http "0.1.46"]
-  [funcool/promesa "5.1.0"]
-  [hoplon "7.3.0-SNAPSHOT"]]
-
+{:deps true
  :nrepl {:port 9000}
-
  :builds
  {:app
   {:target :browser
