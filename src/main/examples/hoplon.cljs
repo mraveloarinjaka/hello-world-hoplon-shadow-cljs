@@ -1,7 +1,7 @@
 (ns examples.hoplon
   (:require
     [hoplon.core :refer [defelem] :as h]
-    [hoplon.jquery]
+    [hoplon.goog]
     [javelin.core :as j]))
 
 (defonce counter (j/cell 1))

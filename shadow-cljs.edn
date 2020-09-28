@@ -6,7 +6,7 @@
   [cider/cider-nrepl "0.25.3"]
   [cljs-http "0.1.46"]
   [funcool/promesa "5.1.0"]
-  [hoplon "7.2.0"]]
+  [hoplon "7.3.0-SNAPSHOT"]]
 
  :nrepl {:port 9000}
 
