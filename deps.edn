@@ -1,19 +1,16 @@
 {:paths ["src/main"]
- :deps
- {binaryage/devtools {:mvn/version "1.0.2"}
-  cider/cider-nrepl {:mvn/version "0.25.3"}
-  cljs-http/cljs-http {:mvn/version "0.1.46"}
-  funcool/promesa {:mvn/version "5.1.0"}
-  hoplon/hoplon {:git/url "https://github.com/hoplon/hoplon" :sha "e565c080c249e4583ae82ba6984ee686ed75f796"}
-  org.clojure/clojure {:mvn/version "1.10.1"}
-  refactor-nrepl/refactor-nrepl {:mvn/version "2.5.0"}}
- :aliases
- {:dev
-  {:jvm-opts    ["-Dlogback.configurationFile=logback.xml" "--illegal-access=deny"] }
-  :cljs
-  {:extra-deps
-   {thheller/shadow-cljs {:mvn/version "2.11.4"}}
-   :main-opts ["-m" "shadow.cljs.devtools.cli"]}
-  :patch {:extra-paths ["src/lib"]}
-  :outdated {:extra-deps {olical/depot {:mvn/version "2.0.1"}}
-             :main-opts  ["-m" "depot.outdated.main"]}}}
+ :deps {binaryage/devtools {:mvn/version "1.0.2"}
+        cider/cider-nrepl {:mvn/version "0.25.3"}
+        cljs-http/cljs-http {:mvn/version "0.1.46"}
+        funcool/promesa {:mvn/version "5.1.0"}
+        hoplon/hoplon {:git/url "https://github.com/hoplon/hoplon" :sha "e565c080c249e4583ae82ba6984ee686ed75f796"}
+        org.clojure/clojure {:mvn/version "1.10.1"}
+        refactor-nrepl/refactor-nrepl {:mvn/version "2.5.0"}}
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://clojars.org/repo/"}}
+ :aliases {:dev {:jvm-opts ["-Dlogback.configurationFile=logback.xml" "--illegal-access=deny"]}
+           :cljs {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.4"}}
+                  :main-opts ["-m" "shadow.cljs.devtools.cli"]}
+           :patch {:extra-paths ["src/lib"]}
+           :outdated {:extra-deps {olical/depot {:mvn/version "2.0.1"}}
+                      :main-opts  ["-m" "depot.outdated.main"]}}}
