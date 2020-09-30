@@ -2,9 +2,9 @@
  :nrepl {:port 9000}
  :builds
  {:app
-  {:target :browser
+  {:target :esm
    :output-dir "resources/public/js"
    :asset-path "/js"
    :devtools {:http-root "resources/public"
               :http-port 3000}
-   :modules {:hoplon {:entries [examples.hoplon]}}}}}
+   :modules {:hoplon {:init-fn examples.hoplon/main}}}}}
