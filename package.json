@@ -12,9 +12,7 @@
   "devDependencies": {
     "shadow-cljs": "^2.11.4"
   },
-  "dependencies": {
-    "c3": "^0.7.20"
-  },
+  "dependencies": {},
   "engines": {
     "yarn": "YARN NO LONGER USED - use npm instead."
   }
