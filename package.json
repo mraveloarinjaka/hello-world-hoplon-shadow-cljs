@@ -17,16 +17,16 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "shadow-cljs": "^2.11.7"
+    "shadow-cljs": "^2.19.5"
   },
   "dependencies": {
-    "bufferutil": "^4.0.2",
+    "bufferutil": "^4.0.6",
     "cookies": "^0.8.0",
     "http2": "^3.3.7",
     "random-bytes": "^1.0.0",
-    "utf-8-validate": "^5.0.3",
-    "webdriverio": "^6.7.3",
-    "xregexp": "^4.4.0"
+    "utf-8-validate": "^5.0.9",
+    "webdriverio": "^7.20.5",
+    "xregexp": "^5.1.1"
   },
   "engines": {
     "yarn": "YARN NO LONGER USED - use npm instead."
