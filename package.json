@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "upgrade": "npx npm-check-updates -u && npm install && cmd-clj -M:dev:outdated -e -w",
+    "watch": "cmd-clj -M:dev:cljs watch app",
+    "release": "cmd-clj -M:dev:cljs release app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
