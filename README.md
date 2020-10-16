@@ -11,3 +11,7 @@ Package
 ```
 clj -M:dev:cljs release app
 ```
+
+
+## Generated page
+[https://mraveloarinjaka.github.io/hello-world-hoplon-shadow-cljs](https://mraveloarinjaka.github.io/hello-world-hoplon-shadow-cljs/)

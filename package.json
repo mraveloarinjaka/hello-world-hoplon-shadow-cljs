@@ -2,7 +2,11 @@
   "name": "hello-world-hoplon-shadow",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/mraveloarinjaka/hello-world-hoplon-shadow-cljs.git"
+  },
+  "main": "app.js",
   "scripts": {
     "upgrade": "npx npm-check-updates -u && npm install && cmd-clj -M:dev:outdated -e -w",
     "watch": "cmd-clj -M:dev:cljs watch app",
