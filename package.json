@@ -21,9 +21,12 @@
   },
   "dependencies": {
     "bufferutil": "^4.0.2",
+    "cookies": "^0.8.0",
     "http2": "^3.3.7",
+    "random-bytes": "^1.0.0",
     "utf-8-validate": "^5.0.3",
-    "webdriverio": "^6.7.3"
+    "webdriverio": "^6.7.3",
+    "xregexp": "^4.4.0"
   },
   "engines": {
     "yarn": "YARN NO LONGER USED - use npm instead."

@@ -13,4 +13,10 @@
   {:target :node-script
    :main examples.server.promises/main
    :output-to "resources/public/js/promises.js"
-   :devtools {:after-load examples.server.promises/start}}}}
+   :devtools {:after-load examples.server.promises/start}}
+  :node-server
+  {:target :node-script
+   :main examples.server.http-server/main
+   :output-to "resources/public/js/http_server.js"
+   :devtools {:before-load-async examples.server.http-server/stop
+              :after-load examples.server.http-server/start}}}}
