@@ -9,8 +9,8 @@
   "main": "app.js",
   "scripts": {
     "upgrade": "npx npm-check-updates -u && npm install && cmd-clj -M:dev:outdated -e -w",
-    "watch": "cmd-clj -M:dev:cljs watch app",
-    "release": "cmd-clj -M:dev:cljs release app",
+    "watch": "cmd-clj -M:dev:cljs-cli watch app",
+    "release": "cmd-clj -M:dev:cljs-cli release app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,15 +18,6 @@
   "license": "ISC",
   "devDependencies": {
     "shadow-cljs": "^2.19.5"
-  },
-  "dependencies": {
-    "bufferutil": "^4.0.6",
-    "cookies": "^0.8.0",
-    "http2": "^3.3.7",
-    "random-bytes": "^1.0.0",
-    "utf-8-validate": "^5.0.9",
-    "webdriverio": "^7.20.5",
-    "xregexp": "^5.1.1"
   },
   "engines": {
     "yarn": "YARN NO LONGER USED - use npm instead."

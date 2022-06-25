@@ -1,4 +1,4 @@
-{:deps true
+{:deps {:aliases [:cljs]}
  :nrepl {:port 9000}
  :builds
  {:app
@@ -9,7 +9,6 @@
    :devtools {:http-root "resources/public"
               :http-port 3000}
    :modules {:hoplon {:init-fn examples.hoplon/main}}}
-  :node-app
   :node-server
   {:target :node-script
    :main examples.server.http-server/main
