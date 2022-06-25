@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - uses: actions/setup-java@v1
         with:
           java-version: '11'
@@ -25,8 +25,8 @@ jobs:
         run: npm install
 
       - name: build release
-        run: clojure -M:dev:cljs:patch release app
-      
+        run: clojure -M:dev:cljs-cli:patch release app
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
