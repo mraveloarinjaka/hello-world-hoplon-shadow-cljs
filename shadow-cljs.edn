@@ -10,10 +10,6 @@
               :http-port 3000}
    :modules {:hoplon {:init-fn examples.hoplon/main}}}
   :node-app
-  {:target :node-script
-   :main examples.server.promises/main
-   :output-to "resources/public/js/promises.js"
-   :devtools {:after-load examples.server.promises/start}}
   :node-server
   {:target :node-script
    :main examples.server.http-server/main
