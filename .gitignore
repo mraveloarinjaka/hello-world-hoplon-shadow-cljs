@@ -4,3 +4,4 @@
 /resources/public/js/*
 /resources/public/mx-nostro-nfr/js/*
 .vim-bookmarks
+.cpcache
