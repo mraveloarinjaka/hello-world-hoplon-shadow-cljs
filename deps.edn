@@ -8,7 +8,7 @@
         lambdaisland/glogi {:mvn/version "1.0.106"}
         macchiato/core {:mvn/version "0.2.22"}
         org.clojure/clojure {:mvn/version "1.11.1"}
-        refactor-nrepl/refactor-nrepl {:mvn/version "3.5.2"}}
+        refactor-nrepl/refactor-nrepl {:mvn/version "3.6.0"}}
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}}
  :aliases {:dev {:jvm-opts ["-Dlogback.configurationFile=logback.xml" "--illegal-access=deny"]}
