@@ -12,8 +12,8 @@
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}}
  :aliases {:dev {:jvm-opts ["-Dlogback.configurationFile=logback.xml" "--illegal-access=deny"]}
-           :cljs {:extra-deps {thheller/shadow-cljs {:mvn/version "2.20.12"}}}
-           :cljs-cli {:extra-deps {thheller/shadow-cljs {:mvn/version "2.20.12"}}
+           :cljs {:extra-deps {thheller/shadow-cljs {:mvn/version "2.20.13"}}}
+           :cljs-cli {:extra-deps {thheller/shadow-cljs {:mvn/version "2.20.13"}}
                   :main-opts ["-m" "shadow.cljs.devtools.cli"]}
            :patch {:extra-paths ["src/lib"]}
            :outdated {:extra-deps {olical/depot {:mvn/version "2.3.0"}}
