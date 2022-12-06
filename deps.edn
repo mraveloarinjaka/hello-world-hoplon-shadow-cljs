@@ -1,7 +1,7 @@
 {:paths ["src/main"]
  :deps {applied-science/js-interop {:mvn/version "0.3.3"}
         binaryage/devtools {:mvn/version "1.0.6"}
-        cider/cider-nrepl {:mvn/version "0.28.7"}
+        cider/cider-nrepl {:mvn/version "0.29.0"}
         cljs-http/cljs-http {:mvn/version "0.1.46"}
         funcool/promesa {:mvn/version "10.0.570"}
         hoplon/hoplon {:git/url "https://github.com/hoplon/hoplon" :sha "6616e18b9b7d640d14238848bf5f36c6e01f0d1a"}
