@@ -4,7 +4,8 @@
         cider/cider-nrepl {:mvn/version "0.29.0"}
         cljs-http/cljs-http {:mvn/version "0.1.46"}
         funcool/promesa {:mvn/version "10.0.594"}
-        hoplon/hoplon {:git/url "https://github.com/hoplon/hoplon" :sha "6616e18b9b7d640d14238848bf5f36c6e01f0d1a"}
+        hoplon/hoplon {:git/url "https://github.com/hoplon/hoplon"
+                       :git/sha "6616e18b9b7d640d14238848bf5f36c6e01f0d1a"}
         lambdaisland/glogi {:mvn/version "1.2.164"}
         macchiato/core {:mvn/version "0.2.22"}
         org.clojure/clojure {:mvn/version "1.11.1"}
@@ -13,8 +14,7 @@
              "clojars" {:url "https://clojars.org/repo/"}}
  :aliases {:dev {:jvm-opts ["-Dlogback.configurationFile=logback.xml" "--illegal-access=deny"]}
            :cljs {:extra-deps {thheller/shadow-cljs {:mvn/version "2.20.19"}}}
-           :cljs-cli {:extra-deps {thheller/shadow-cljs {:mvn/version "2.20.19"}}
-                  :main-opts ["-m" "shadow.cljs.devtools.cli"]}
+           :cljs-cli {:main-opts ["-m" "shadow.cljs.devtools.cli"]}
            :patch {:extra-paths ["src/lib"]}
            :outdated {:extra-deps {olical/depot {:mvn/version "2.3.0"}}
                       :main-opts  ["-m" "depot.outdated.main"]}}}

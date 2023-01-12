@@ -24,5 +24,10 @@
   },
   "engines": {
     "yarn": "YARN NO LONGER USED - use npm instead."
+  },
+  "dependencies": {
+    "cookies": "^0.8.0",
+    "random-bytes": "^1.0.0",
+    "xregexp": "^5.1.1"
   }
 }

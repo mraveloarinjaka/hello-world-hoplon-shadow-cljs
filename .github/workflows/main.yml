@@ -19,13 +19,13 @@ jobs:
 
       - uses: DeLaGuardo/setup-clojure@master
         with:
-          cli: '1.10.1.697'
+          cli: 'latest'
 
       - name: install dependencies
         run: npm install
 
       - name: build release
-        run: clojure -M:dev:cljs-cli:patch release app
+        run: clojure -M:dev:cljs:cljs-cli:patch release app
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
