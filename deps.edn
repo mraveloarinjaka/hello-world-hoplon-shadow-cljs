@@ -1,5 +1,5 @@
 {:paths ["src/main"]
- :deps {applied-science/js-interop {:mvn/version "0.3.3"}
+ :deps {applied-science/js-interop {:mvn/version "0.4.1"}
         binaryage/devtools {:mvn/version "1.0.6"}
         cider/cider-nrepl {:mvn/version "0.30.0"}
         cljs-http/cljs-http {:mvn/version "0.1.46"}
