@@ -1,6 +1,6 @@
 {:paths ["src/main"]
  :deps {applied-science/js-interop {:mvn/version "0.4.2"}
-        binaryage/devtools {:mvn/version "1.0.6"}
+        binaryage/devtools {:mvn/version "1.0.7"}
         cider/cider-nrepl {:mvn/version "0.30.0"}
         cljs-http/cljs-http {:mvn/version "0.1.46"}
         funcool/promesa {:mvn/version "11.0.671"}
