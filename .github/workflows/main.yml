@@ -25,7 +25,7 @@ jobs:
         run: npm install
 
       - name: build release
-        run: clojure -M:dev:cljs:cljs-cli:patch release app
+        run: clojure -M:cljs-cli release app
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

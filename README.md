@@ -4,12 +4,12 @@ Basic example showing how to use [hoplon](https://github.com/hoplon/hoplon) when
 
 Development mode
 ```
-clj -M:dev:cljs watch app
+clj -M:dev:cljs-cli watch app
 ```
 
 Package
 ```
-clj -M:dev:cljs release app
+clj -M:cljs-cli release app
 ```
 
 
