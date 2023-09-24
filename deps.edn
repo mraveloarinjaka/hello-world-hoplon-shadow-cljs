@@ -10,7 +10,7 @@
              "clojars" {:url "https://clojars.org/repo/"}}
  :aliases {:dev {:jvm-opts ["-Dlogback.configurationFile=logback.xml" "--illegal-access=deny"]}
            :cljs {:extra-deps {binaryage/devtools {:mvn/version "1.0.7"}
-                               cider/cider-nrepl {:mvn/version "0.30.0"}
+                               cider/cider-nrepl {:mvn/version "0.38.1"}
                                refactor-nrepl/refactor-nrepl {:mvn/version "3.9.0"}
                                thheller/shadow-cljs {:mvn/version "2.25.6"}}}
            :cljs-cli {:extra-deps {thheller/shadow-cljs {:mvn/version "2.25.6"}}
