@@ -46,10 +46,10 @@ jobs:
           output-type: sarif
           output-file: clj-watson-results.sarif
           fail-on-result: false
-          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload analysis results to GitHub
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{github.workspace}}/clj-watson-results.sarif
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           wait-for-processing: true
