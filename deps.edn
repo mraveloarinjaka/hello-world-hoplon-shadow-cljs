@@ -1,6 +1,6 @@
 {:paths ["src/main"]
  :deps {applied-science/js-interop {:mvn/version "0.4.2"}
-        cljs-http/cljs-http {:mvn/version "0.1.46"}
+        cljs-http/cljs-http {:mvn/version "0.1.48"}
         funcool/promesa {:mvn/version "11.0.678"}
         hoplon/hoplon {:git/url "https://github.com/hoplon/hoplon"
                        :git/sha "1fb6352a2b403e0a8d99e4cb772dae32f6c96425"}
