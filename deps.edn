@@ -12,6 +12,6 @@
            :cljs {:extra-deps {binaryage/devtools {:mvn/version "1.0.7"}
                                cider/cider-nrepl {:mvn/version "0.38.1"}
                                refactor-nrepl/refactor-nrepl {:mvn/version "3.10.0"}
-                               thheller/shadow-cljs {:mvn/version "2.28.16"}}}
-           :cljs-cli {:extra-deps {thheller/shadow-cljs {:mvn/version "2.28.16"}}
+                               thheller/shadow-cljs {:mvn/version "2.28.17"}}}
+           :cljs-cli {:extra-deps {thheller/shadow-cljs {:mvn/version "2.28.17"}}
                       :main-opts ["-m" "shadow.cljs.devtools.cli"]}}}
