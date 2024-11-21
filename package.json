@@ -1,0 +1,29 @@
+{
+  "name": "hello-world-hoplon-shadow",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mraveloarinjaka/hello-world-hoplon-shadow-cljs.git"
+  },
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "14.1.1",
+    "renovate": "^36.107.0",
+    "shadow-cljs": "2.28.19"
+  },
+  "engines": {
+    "yarn": "YARN NO LONGER USED - use npm instead."
+  },
+  "dependencies": {
+    "cookies": "^0.8.0",
+    "random-bytes": "^1.0.0",
+    "xregexp": "^5.1.1"
+  }
+}

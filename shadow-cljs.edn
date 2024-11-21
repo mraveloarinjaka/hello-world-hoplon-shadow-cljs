@@ -1,0 +1,17 @@
+{:deps {:aliases [:cljs]}
+ :nrepl {:port 9000}
+ :builds
+ {:app
+  {:target :esm
+   :output-dir "resources/public/js"
+   :asset-path "/js"
+   :compiler-options {:output-feature-set :es-next}
+   :devtools {:http-root "resources/public"
+              :http-port 3000}
+   :modules {:hoplon {:init-fn examples.hoplon/main}}}
+  :node-server
+  {:target :node-script
+   :main examples.server.http-server/main
+   :output-to "resources/public/js/http_server.js"
+   :devtools {:before-load-async examples.server.http-server/stop
+              :after-load examples.server.http-server/start}}}}

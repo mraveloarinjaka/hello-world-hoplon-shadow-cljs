@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  merge_group:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+
+      - uses: DeLaGuardo/setup-clojure@master
+        with:
+          cli: 'latest'
+
+      - name: install dependencies
+        run: npm install
+
+      - name: build release
+        run: clojure -M:cljs-cli release app
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./resources/public
