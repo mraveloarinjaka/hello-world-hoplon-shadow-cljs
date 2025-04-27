@@ -29,7 +29,8 @@ jobs:
         run: clojure -M:cljs-cli release app
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: Cecilapp/GitHub-Pages-deploy@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./resources/public
+          build_dir: ./resources/public
