@@ -53,7 +53,7 @@
 
 (defelem home []
   (h/div
-    :id "app"
+    :id "app" :class "container"
     (h/h3 "Welcome to Hoplon!")
     (buttons ::counter counter
              ::counter-by-42 counter-by-42)
