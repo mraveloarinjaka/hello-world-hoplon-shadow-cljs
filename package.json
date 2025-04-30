@@ -15,7 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "http-server": "14.1.1",
-    "renovate": "^36.107.0",
+    "renovate": "^40.0.0",
     "shadow-cljs": "2.28.23"
   },
   "engines": {
