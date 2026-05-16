@@ -15,15 +15,15 @@
   "license": "ISC",
   "devDependencies": {
     "http-server": "14.1.1",
-    "renovate": "^36.107.0",
-    "shadow-cljs": "2.28.23"
+    "renovate": "^43.150.0",
+    "shadow-cljs": "3.4.10"
   },
   "engines": {
     "yarn": "YARN NO LONGER USED - use npm instead."
   },
   "dependencies": {
-    "cookies": "^0.8.0",
+    "cookies": "^0.9.1",
     "random-bytes": "^1.0.0",
-    "xregexp": "^5.1.1"
+    "xregexp": "^5.1.2"
   }
 }
