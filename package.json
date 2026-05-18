@@ -16,7 +16,7 @@
   "devDependencies": {
     "http-server": "14.1.1",
     "renovate": "^43.150.0",
-    "shadow-cljs": "3.4.10"
+    "shadow-cljs": "3.4.11"
   },
   "engines": {
     "yarn": "YARN NO LONGER USED - use npm instead."
