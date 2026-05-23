@@ -4,7 +4,7 @@
         funcool/promesa {:mvn/version "11.0.678"}
         hoplon/hoplon {:git/url "https://github.com/hoplon/hoplon"
                        :git/sha "1abba1c9cef5ac976ff0b5aba862fcfc28990a4a"}
-        lambdaisland/glogi {:mvn/version "1.3.169"}
+        lambdaisland/glogi {:mvn/version "1.4.177"}
         macchiato/core {:mvn/version "0.2.24"}}
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}}
